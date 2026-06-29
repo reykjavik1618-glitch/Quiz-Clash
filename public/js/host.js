@@ -153,6 +153,23 @@
     fileLoadInput.value = '';
   });
 
+  // ---------------- 参加用URL・QRコード ----------------
+  function showJoinInfo(code) {
+    const joinUrl = `${window.location.origin}/play.html?code=${code}`;
+
+    const link = document.getElementById('join-url-link');
+    link.href = joinUrl;
+    link.textContent = joinUrl;
+
+    const qrWrap = document.getElementById('qr-wrap');
+    qrWrap.innerHTML = '';
+    if (window.QRCode && typeof window.QRCode.toString === 'function') {
+      window.QRCode.toString(joinUrl, { type: 'svg', margin: 1, width: 200 }, (err, svg) => {
+        if (!err) qrWrap.innerHTML = svg;
+      });
+    }
+  }
+
   document.getElementById('btn-create-room').addEventListener('click', () => {
     editorError.textContent = '';
     const quiz = collectQuiz();
@@ -168,6 +185,7 @@
       currentRoomCode = res.code;
       totalQuestions = res.total;
       document.getElementById('room-code').textContent = res.code;
+      showJoinInfo(res.code);
       showScreen('lobby');
     });
   });
