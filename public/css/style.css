@@ -131,6 +131,11 @@ input[type="text"]:focus, input[type="number"]:focus { outline: none; border-col
   letter-spacing: 8px;
   margin: 6px 0 16px;
 }
+.qr-wrap { display: flex; justify-content: center; margin: 4px 0 12px; }
+.qr-wrap svg { background: var(--white); padding: 8px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.join-url-box { margin: 0 0 6px; }
+.join-url-link { font-size: 14px; font-weight: 700; color: var(--purple); word-break: break-all; text-decoration: none; }
+.join-url-link:hover { text-decoration: underline; }
 .lobby-hint { color: var(--gray); margin-bottom: 20px; }
 .players-title { color: var(--purple-dark); }
 .players-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 40px; margin-bottom: 16px; }
