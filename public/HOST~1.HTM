@@ -39,7 +39,10 @@
     <div class="lobby-wrap">
       <p class="lobby-label">参加コード</p>
       <h1 id="room-code" class="room-code">------</h1>
-      <p class="lobby-hint">参加者はこのページのURLの <strong>/play.html</strong> を開き、このコードを入力してください</p>
+
+      <div id="qr-wrap" class="qr-wrap"></div>
+      <p class="join-url-box"><a id="join-url-link" class="join-url-link" href="#" target="_blank" rel="noopener"></a></p>
+      <p class="lobby-hint">スマホのカメラでQRコードを読み取るか、上のURLを開いて参加してください</p>
 
       <h2 class="players-title">参加者 (<span id="player-count">0</span>人)</h2>
       <div id="players-grid" class="players-grid"></div>
@@ -80,6 +83,7 @@
     <a href="/host.html" class="btn btn-primary btn-large">もう一度作成する</a>
   </section>
 
+  <script src="/js/qrcode.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/host.js"></script>
 </body>
