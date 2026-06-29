@@ -1,0 +1,35 @@
+{
+  "title": "一般常識クイズ",
+  "questions": [
+    {
+      "text": "日本の首都はどこ？",
+      "options": ["大阪", "東京", "京都", "名古屋"],
+      "correctIndex": 1,
+      "timeLimit": 15
+    },
+    {
+      "text": "世界で一番大きい海は？",
+      "options": ["大西洋", "インド洋", "太平洋", "北極海"],
+      "correctIndex": 2,
+      "timeLimit": 15
+    },
+    {
+      "text": "1年は何ヶ月？",
+      "options": ["10ヶ月", "11ヶ月", "12ヶ月", "13ヶ月"],
+      "correctIndex": 2,
+      "timeLimit": 10
+    },
+    {
+      "text": "水の化学式は？",
+      "options": ["CO2", "H2O", "O2", "NaCl"],
+      "correctIndex": 1,
+      "timeLimit": 15
+    },
+    {
+      "text": "富士山がある2つの県は？",
+      "options": ["静岡県と山梨県", "長野県と新潟県", "神奈川県と東京都", "愛知県と岐阜県"],
+      "correctIndex": 0,
+      "timeLimit": 20
+    }
+  ]
+}

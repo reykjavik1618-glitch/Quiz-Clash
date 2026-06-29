@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Clash - 参加</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="player-body">
+
+  <!-- ===== 参加画面 ===== -->
+  <section id="screen-join" class="screen">
+    <div class="join-wrap">
+      <h1 class="logo">Quiz Clash<span class="logo-dot">!</span></h1>
+      <label class="field-label">参加コード</label>
+      <input id="join-code" type="text" maxlength="6" placeholder="例: AB12CD" autocapitalize="characters" />
+      <label class="field-label">ニックネーム</label>
+      <input id="join-name" type="text" maxlength="20" placeholder="例: たろう" />
+      <p id="join-error" class="error-text"></p>
+      <button id="btn-join" class="btn btn-primary btn-large" type="button">参加する</button>
+    </div>
+  </section>
+
+  <!-- ===== 待機画面 ===== -->
+  <section id="screen-waiting" class="screen hidden">
+    <div class="center-message">
+      <h1 id="waiting-greeting" class="page-title">ようこそ！</h1>
+      <p class="lobby-hint">ホストが開始するまでお待ちください…</p>
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <!-- ===== 回答画面 ===== -->
+  <section id="screen-answer" class="screen hidden">
+    <p id="answer-status" class="answer-status">ホスト画面の問題を見て回答してください</p>
+    <div id="answer-options" class="options-grid player-options"></div>
+    <div id="answer-submitted" class="center-message hidden">
+      <div class="spinner"></div>
+      <p>回答を送信しました！結果をお待ちください…</p>
+    </div>
+  </section>
+
+  <!-- ===== 結果画面（毎問） ===== -->
+  <section id="screen-player-result" class="screen hidden">
+    <div id="result-badge" class="result-badge">
+      <h1 id="result-title" class="result-title">正解！</h1>
+      <p id="result-points" class="result-points">+1000点</p>
+      <p id="result-total" class="result-total">合計: 0点</p>
+      <p id="result-rank" class="result-rank"></p>
+    </div>
+  </section>
+
+  <!-- ===== 最終結果画面 ===== -->
+  <section id="screen-final" class="screen hidden">
+    <h1 class="page-title">ゲーム終了！</h1>
+    <div id="final-rank-display" class="final-rank-display"></div>
+    <p id="final-score-display" class="final-score-display"></p>
+    <a href="/play.html" class="btn btn-primary btn-large">もう一度参加する</a>
+  </section>
+
+  <section id="screen-host-left" class="screen hidden">
+    <div class="center-message">
+      <h1 class="page-title">ホストが切断しました</h1>
+      <p class="lobby-hint">ゲームは終了しました</p>
+    </div>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: quiz-clash
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
