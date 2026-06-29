@@ -29,6 +29,62 @@
   let hasAnsweredThisQuestion = false;
   let lastAckResult = null;
 
+  // ---------------- 演出: 紙吹雪・ファイア・トロフィー ----------------
+  const CONFETTI_COLORS = ['#e21b3c', '#1368ce', '#d89e00', '#26890c', '#46178f'];
+
+  function launchConfetti(count) {
+    const total = count || 50;
+    for (let i = 0; i < total; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      piece.style.animationDuration = (1.6 + Math.random() * 1.3) + 's';
+      piece.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 3500);
+    }
+  }
+
+  function launchFireBurst(count) {
+    const total = count || 10;
+    for (let i = 0; i < total; i++) {
+      const flame = document.createElement('div');
+      flame.className = 'fire-piece';
+      flame.textContent = '🔥';
+      flame.style.left = (30 + Math.random() * 40) + 'vw';
+      flame.style.animationDuration = (0.9 + Math.random() * 0.6) + 's';
+      flame.style.animationDelay = (Math.random() * 0.25) + 's';
+      document.body.appendChild(flame);
+      setTimeout(() => flame.remove(), 2000);
+    }
+  }
+
+  function ensureStreakBadge() {
+    let el = document.getElementById('streak-badge');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'streak-badge';
+      el.className = 'streak-badge hidden';
+      document.getElementById('result-badge').appendChild(el);
+    }
+    return el;
+  }
+
+  function ensureTrophyDisplay() {
+    let el = document.getElementById('trophy-display');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'trophy-display';
+      el.className = 'trophy-display hidden';
+      el.textContent = '🏆';
+      const finalScreen = document.getElementById('screen-final');
+      const rankDisplay = document.getElementById('final-rank-display');
+      finalScreen.insertBefore(el, rankDisplay);
+    }
+    return el;
+  }
+
   // ---------------- 参加画面 ----------------
   const joinCodeInput = document.getElementById('join-code');
   const joinNameInput = document.getElementById('join-name');
@@ -105,6 +161,21 @@
     document.getElementById('result-points').textContent = res.correct ? `+${res.pointsEarned}点` : '+0点';
     document.getElementById('result-total').textContent = `合計: ${res.totalScore}点`;
     document.getElementById('result-rank').textContent = '';
+
+    const streakBadge = ensureStreakBadge();
+    if (res.correct && res.streak >= 2) {
+      streakBadge.textContent = `🔥 ${res.streak}連続正解！`;
+      streakBadge.classList.remove('hidden');
+    } else {
+      streakBadge.classList.add('hidden');
+    }
+
+    if (res.correct) {
+      launchConfetti(45);
+      if (res.streak >= 2) {
+        launchFireBurst(10 + Math.min(20, res.streak * 3));
+      }
+    }
   }
 
   // ---------------- 結果・リーダーボード反映 ----------------
@@ -119,6 +190,7 @@
       document.getElementById('result-badge').className = 'result-badge is-wrong';
       document.getElementById('result-points').textContent = '+0点';
       document.getElementById('result-total').textContent = me ? `合計: ${me.score}点` : '';
+      ensureStreakBadge().classList.add('hidden');
     }
 
     document.getElementById('result-rank').textContent = rank
@@ -138,6 +210,14 @@
     const me = players.find((p) => p.id === socket.id);
     document.getElementById('final-rank-display').textContent = rank > 0 ? `${rank} 位` : '-';
     document.getElementById('final-score-display').textContent = me ? `合計 ${me.score} 点` : '';
+
+    const trophy = ensureTrophyDisplay();
+    if (rank === 1) {
+      trophy.classList.remove('hidden');
+      launchConfetti(90);
+    } else {
+      trophy.classList.add('hidden');
+    }
   });
 
   socket.on('room:hostLeft', () => {
