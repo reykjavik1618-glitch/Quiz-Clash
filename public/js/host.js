@@ -40,6 +40,19 @@
     }
   }
 
+  // ---------------- 演出: ダブルポイント・バッジ ----------------
+  function ensureDoubleBadge(id, beforeEl) {
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = id;
+      el.className = 'double-points-badge hidden';
+      el.textContent = '⭐ ダブルポイント問題！（得点2倍） ⭐';
+      beforeEl.parentNode.insertBefore(el, beforeEl);
+    }
+    return el;
+  }
+
   // ---------------- 編集画面 ----------------
   const questionsList = document.getElementById('questions-list');
   const editorError = document.getElementById('editor-error');
@@ -56,6 +69,7 @@
     const correctIndex = data && Number.isInteger(data.correctIndex) ? data.correctIndex : 0;
     const timeLimit = (data && data.timeLimit) || 20;
     const text = (data && data.text) || '';
+    const doublePoints = !!(data && data.doublePoints);
 
     wrap.innerHTML = `
       <div class="question-block-header">
@@ -74,9 +88,15 @@
           )
           .join('')}
       </div>
-      <label class="time-limit-label">制限時間（秒）:
-        <input type="number" class="q-input-time" min="5" max="120" value="${timeLimit}" />
-      </label>
+      <div class="question-block-footer">
+        <label class="time-limit-label">制限時間（秒）:
+          <input type="number" class="q-input-time" min="5" max="120" value="${timeLimit}" />
+        </label>
+        <label class="double-points-label">
+          <input type="checkbox" class="q-double-points" ${doublePoints ? 'checked' : ''} />
+          ⭐ ダブルポイント（得点2倍）
+        </label>
+      </div>
     `;
 
     wrap.querySelector('.btn-remove-question').addEventListener('click', () => {
@@ -121,9 +141,16 @@
       const radio = block.querySelector('.q-correct-radio:checked');
       const correctIndex = radio ? Number(radio.value) : 0;
       const timeLimit = Number(block.querySelector('.q-input-time').value) || 20;
+      const doublePoints = block.querySelector('.q-double-points').checked;
 
       if (!text || options.length < 2) continue;
-      questions.push({ text, options, correctIndex: Math.min(correctIndex, options.length - 1), timeLimit });
+      questions.push({
+        text,
+        options,
+        correctIndex: Math.min(correctIndex, options.length - 1),
+        timeLimit,
+        doublePoints,
+      });
     }
     return { title, questions };
   }
@@ -237,11 +264,14 @@
   // ---------------- 出題画面 ----------------
   let timerInterval = null;
 
-  socket.on('room:question', ({ index, total, text, options, timeLimit, startedAt }) => {
+  socket.on('room:question', ({ index, total, text, options, timeLimit, startedAt, doublePoints }) => {
     showScreen('question');
     document.getElementById('q-progress').textContent = `問題 ${index + 1} / ${total}`;
     document.getElementById('q-text').textContent = text;
     document.getElementById('q-answered').textContent = '回答: 0 / 0';
+
+    const qText = document.getElementById('q-text');
+    ensureDoubleBadge('double-points-badge-question', qText).classList.toggle('hidden', !doublePoints);
 
     const optionsGrid = document.getElementById('q-options');
     optionsGrid.innerHTML = options
@@ -271,13 +301,16 @@
   });
 
   // ---------------- 結果画面 ----------------
-  socket.on('room:results', ({ index, total, correctIndex, correctText, counts, players }) => {
+  socket.on('room:results', ({ index, total, correctIndex, correctText, doublePoints, counts, players }) => {
     if (timerInterval) clearInterval(timerInterval);
     showScreen('results');
 
     const style = OPTION_STYLES[correctIndex] || OPTION_STYLES[0];
     document.getElementById('results-correct-text').innerHTML =
       `<span class="option-shape ${style.cls}">${style.shape}</span> ${escapeHtml(correctText)}`;
+
+    const resultsCorrectText = document.getElementById('results-correct-text');
+    ensureDoubleBadge('double-points-badge-results', resultsCorrectText).classList.toggle('hidden', !doublePoints);
 
     const maxCount = Math.max(1, ...counts);
     document.getElementById('results-bars').innerHTML = counts
