@@ -75,13 +75,18 @@
 
   document.getElementById('btn-add-question').addEventListener('click', () => addQuestionBlock());
 
+  function loadQuizIntoEditor(quizData) {
+    document.getElementById('quiz-title').value = (quizData && quizData.title) || '';
+    questionsList.innerHTML = '';
+    ((quizData && quizData.questions) || []).forEach((q) => addQuestionBlock(q));
+  }
+
   document.getElementById('btn-load-sample').addEventListener('click', async () => {
     try {
       const res = await fetch('/quizzes/sample-quiz.json');
       const sample = await res.json();
-      document.getElementById('quiz-title').value = sample.title || '';
-      questionsList.innerHTML = '';
-      sample.questions.forEach((q) => addQuestionBlock(q));
+      loadQuizIntoEditor(sample);
+      editorError.textContent = '';
     } catch (err) {
       editorError.textContent = 'サンプルの読み込みに失敗しました';
     }
@@ -105,6 +110,48 @@
     }
     return { title, questions };
   }
+
+  // ---------------- クイズの保存・読み込み（JSONファイル） ----------------
+  document.getElementById('btn-save-quiz').addEventListener('click', () => {
+    const quiz = collectQuiz();
+    if (quiz.questions.length === 0) {
+      editorError.textContent = '保存する前に、問題を1つ以上入力してください';
+      return;
+    }
+    editorError.textContent = '';
+    const blob = new Blob([JSON.stringify(quiz, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const safeName = (quiz.title || 'quiz').replace(/[\\/:*?"<>|]/g, '_');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeName}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  const fileLoadInput = document.getElementById('file-load-quiz');
+  document.getElementById('btn-load-quiz').addEventListener('click', () => {
+    fileLoadInput.click();
+  });
+  fileLoadInput.addEventListener('change', () => {
+    const file = fileLoadInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result));
+        if (!data || !Array.isArray(data.questions)) throw new Error('invalid quiz format');
+        loadQuizIntoEditor(data);
+        editorError.textContent = '';
+      } catch (err) {
+        editorError.textContent = 'クイズファイルの読み込みに失敗しました（形式を確認してください）';
+      }
+    };
+    reader.readAsText(file);
+    fileLoadInput.value = '';
+  });
 
   document.getElementById('btn-create-room').addEventListener('click', () => {
     editorError.textContent = '';
