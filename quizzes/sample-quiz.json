@@ -26,10 +26,11 @@
       "timeLimit": 15
     },
     {
-      "text": "富士山がある2つの県は？",
+      "text": "富士山がある2つの県は？（ダブルポイント問題！）",
       "options": ["静岡県と山梨県", "長野県と新潟県", "神奈川県と東京都", "愛知県と岐阜県"],
       "correctIndex": 0,
-      "timeLimit": 20
+      "timeLimit": 20,
+      "doublePoints": true
     }
   ]
 }
