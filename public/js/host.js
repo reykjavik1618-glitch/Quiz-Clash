@@ -23,6 +23,23 @@
     });
   }
 
+  // ---------------- 演出: 紙吹雪 ----------------
+  const CONFETTI_COLORS = ['#e21b3c', '#1368ce', '#d89e00', '#26890c', '#46178f'];
+
+  function launchConfetti(count) {
+    const total = count || 60;
+    for (let i = 0; i < total; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      piece.style.animationDuration = (1.6 + Math.random() * 1.3) + 's';
+      piece.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 3500);
+    }
+  }
+
   // ---------------- 編集画面 ----------------
   const questionsList = document.getElementById('questions-list');
   const editorError = document.getElementById('editor-error');
@@ -296,7 +313,7 @@
         <div class="leaderboard-row ${i === 0 ? 'rank-first' : ''}">
           <span class="leaderboard-rank">${i + 1}</span>
           <span class="leaderboard-name">${escapeHtml(p.name)}</span>
-          <span class="leaderboard-score">${p.score}</span>
+          <span class="leaderboard-score">${p.score}${p.streak >= 2 ? ` <span class="streak-tag">🔥${p.streak}</span>` : ''}</span>
         </div>`
       )
       .join('');
@@ -313,10 +330,12 @@
       .map((i) => {
         const p = top3[i];
         const heightCls = i === 0 ? 'podium-1' : i === 1 ? 'podium-2' : 'podium-3';
-        return `<div class="podium-col ${heightCls}"><div class="podium-name">${escapeHtml(p.name)}</div><div class="podium-score">${p.score}</div><div class="podium-rank">${i + 1}</div></div>`;
+        const trophy = i === 0 ? '<div class="podium-trophy">🏆</div>' : '';
+        return `<div class="podium-col ${heightCls}">${trophy}<div class="podium-name">${escapeHtml(p.name)}</div><div class="podium-score">${p.score}</div><div class="podium-rank">${i + 1}</div></div>`;
       })
       .join('');
     renderLeaderboard('final-leaderboard-list', players);
+    launchConfetti(90);
   });
 
   socket.on('room:hostLeft', () => {
