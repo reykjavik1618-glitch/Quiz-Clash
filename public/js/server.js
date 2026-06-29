@@ -51,6 +51,7 @@ function sanitizeQuiz(quiz) {
       options,
       correctIndex,
       timeLimit,
+      doublePoints: Boolean(q.doublePoints),
     });
   }
 
@@ -192,7 +193,8 @@ io.on('connection', (socket) => {
     let pointsEarned = 0;
     if (isCorrect) {
       const ratio = Math.max(0, Math.min(1, 1 - elapsedMs / timeLimitMs));
-      pointsEarned = Math.round(500 + 500 * ratio); // 早いほど高得点(500〜1000点)
+      pointsEarned = Math.round(500 + 500 * ratio); // 正解 かつ 早いほど高得点(500〜1000点)
+      if (question.doublePoints) pointsEarned *= 2; // ダブルポイント問題は2倍
       player.streak = (player.streak || 0) + 1;
     } else {
       player.streak = 0;
@@ -267,6 +269,7 @@ function advanceToQuestion(room, index) {
     options: q.options,
     timeLimit: q.timeLimit,
     startedAt: room.questionStartedAt,
+    doublePoints: !!q.doublePoints,
   });
 }
 
@@ -295,6 +298,7 @@ function showResults(room) {
     total: room.quiz.questions.length,
     correctIndex: q.correctIndex,
     correctText: q.options[q.correctIndex],
+    doublePoints: !!q.doublePoints,
     counts,
     answeredCount,
     totalPlayers: room.players.size,
