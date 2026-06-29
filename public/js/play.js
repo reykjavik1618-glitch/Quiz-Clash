@@ -85,6 +85,19 @@
     return el;
   }
 
+  function ensureDoubleBadge() {
+    let el = document.getElementById('double-points-badge');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'double-points-badge';
+      el.className = 'double-points-badge hidden';
+      el.textContent = '⭐ ダブルポイント問題！（得点2倍） ⭐';
+      const status = document.getElementById('answer-status');
+      status.parentNode.insertBefore(el, status);
+    }
+    return el;
+  }
+
   // ---------------- 参加画面 ----------------
   const joinCodeInput = document.getElementById('join-code');
   const joinNameInput = document.getElementById('join-name');
@@ -122,12 +135,14 @@
   }
 
   // ---------------- 出題画面 ----------------
-  socket.on('room:question', () => {
+  socket.on('room:question', ({ doublePoints }) => {
     hasAnsweredThisQuestion = false;
     lastAckResult = null;
     showScreen('answer');
     document.getElementById('answer-status').textContent = 'ホスト画面の問題を見て回答してください';
     document.getElementById('answer-submitted').classList.add('hidden');
+
+    ensureDoubleBadge().classList.toggle('hidden', !doublePoints);
 
     const optionsGrid = document.getElementById('answer-options');
     optionsGrid.classList.remove('hidden');
